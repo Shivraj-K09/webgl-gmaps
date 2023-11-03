@@ -13,7 +13,7 @@ import { getGeocode, getLatLng } from "use-places-autocomplete";
 
 const mapOptions = {
   mapId: process.env.NEXT_PUBLIC_MAP_ID,
-  center: { lat: 12.9716, lng: 77.5946 }, // Replace with the coordinates of Bangalore
+  center: { lat: 43.66293, lng: -79.39314 },
   zoom: 18,
   disableDefaultUI: true,
   heading: 25,
@@ -28,7 +28,6 @@ export default function App() {
   );
 }
 
-// It is loading the map
 function MyMap() {
   const [route, setRoute] = useState(null);
   const [map, setMap] = useState();
@@ -50,7 +49,6 @@ function MyMap() {
 const Animation_MS = 10000;
 const FRONT_VECTOR = new Vector3(0, -1, 0);
 
-//Animation of model
 function Animation({ map, route }) {
   const overlayRef = useRef();
   const trackRef = useRef();
@@ -76,6 +74,7 @@ function Animation({ map, route }) {
     trackRef.current = createTrackFromCurve(curve);
     scene.add(trackRef.current);
 
+    //Car
     loadModel().then((model) => {
       if (carRef.current) {
         scene.remove(carRef.current);
@@ -107,12 +106,11 @@ function Animation({ map, route }) {
       scene.remove(trackRef.current);
       scene.remove(carRef.current);
     };
-  }, [route, map]);
+  }, [route]);
 
   return null;
 }
 
-// The track or the route of the road from the origin and direction.
 function createTrackFromCurve(curve) {
   const points = curve.getSpacedPoints(curve.points.length * 10);
   const positions = points.map((point) => point.toArray()).flat();
@@ -129,9 +127,9 @@ function createTrackFromCurve(curve) {
   // console.log(points);
 }
 
-//Loading the 3D Model
 async function loadModel() {
   const loader = new GLTFLoader();
+  // This work is based on "Low poly Car" (https://sketchfab.com/3d-models/low-poly-car-f822f0c500a24ca9ac2af183d2e630b4) by reyad.bader (https://sketchfab.com/reyad.bader) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
   const object = await loader.loadAsync("/man_walking/scene.gltf");
   const scene = object.scene;
   scene.scale.setScalar(0.5);
@@ -139,14 +137,13 @@ async function loadModel() {
   return scene;
 }
 
-// Direction
 function Directions({ setRoute }) {
   const [origin] = useState("27 Front St E Toronto");
   const [destination] = useState("75 Yonge Street Toronto");
 
   useEffect(() => {
     fetchDirections(origin, destination, setRoute);
-  }, [origin, destination, setRoute]);
+  }, [origin, destination]);
 
   return (
     <div className="directions">
@@ -159,7 +156,6 @@ function Directions({ setRoute }) {
   );
 }
 
-// Fetching the Directions
 async function fetchDirections(origin, destination, setRoute) {
   const [originResults, destinationResults] = await Promise.all([
     getGeocode({ address: origin }),
@@ -185,8 +181,8 @@ async function fetchDirections(origin, destination, setRoute) {
           lat: path.lat(),
           lng: path.lng(),
         }));
-        setRoute(route);
         // console.log(route);
+        setRoute(route);
       }
     }
   );
